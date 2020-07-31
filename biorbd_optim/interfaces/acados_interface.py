@@ -44,7 +44,7 @@ class AcadosInterface(SolverInterface):
         u = ocp.nlp[0]["U"][0]
         p = ocp.nlp[0]["p"]
         mod = ocp.nlp[0]["model"]
-        x_dot = SX.sym("x_dot", mod.nbQdot() * 2, 1)
+        x_dot = SX.sym("x_dot", x.shape[0], x.shape[1])
 
         f_expl = ocp.nlp[0]["dynamics_func"](x, u, p)
         f_impl = x_dot - f_expl

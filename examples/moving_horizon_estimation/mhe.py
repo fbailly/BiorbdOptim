@@ -222,6 +222,7 @@ if __name__ == "__main__":
     }
     options_acados = {
         "nlp_solver_max_iter": 1000,
+        "integrator_type": "ERK",
     }
     # sol = ocp.solve(solver_options=options_ipopt)
     sol = ocp.solve(solver=Solver.ACADOS, solver_options=options_acados)
