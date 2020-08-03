@@ -16,7 +16,7 @@ from biorbd_optim import (
 )
 
 
-def prepare_ocp(biorbd_model_path, final_time, number_shooting_points, use_SX=False):
+def prepare_ocp(biorbd_model_path, final_time, number_shooting_points, use_SX=False, nb_threads=1):
     # --- Options --- #
     # Model path
     biorbd_model = biorbd.Model(biorbd_model_path)
@@ -68,6 +68,7 @@ def prepare_ocp(biorbd_model_path, final_time, number_shooting_points, use_SX=Fa
         u_bounds,
         objective_functions,
         use_SX=use_SX,
+        nb_threads=nb_threads
     )
 
 
@@ -84,7 +85,8 @@ if __name__ == "__main__":
     )
     toc_ac = time() - tic
 
-    ocp_ip = prepare_ocp(biorbd_model_path="arm26.bioMod", final_time=2, number_shooting_points=51, use_SX=False)
+    ocp_ip = prepare_ocp(biorbd_model_path="arm26.bioMod", final_time=2,
+                         number_shooting_points=51, use_SX=False, nb_threads=6)
     tic = time()
     sol_ip, sol_obj_ip = ocp_ip.solve(
         solver=Solver.IPOPT,
@@ -96,12 +98,13 @@ if __name__ == "__main__":
             "compl_inf_tol": 1e-3,
             "linear_solver": "ma57",
             "max_iter": 100,
+            "hessian_approximation": "exact",
         },
         return_objectives=True,
     )
     toc_ip = time() - tic
-    print(f"Time to solve with ACADOS: {toc_ac}sec")
-    print(f"Time to solve with IPOPT: {toc_ip}sec")
+    print(f"Time to solve with ACADOS: {sol_ac['time_tot']}sec")
+    print(f"Time to solve with IPOPT: {sol_ip['time_tot']}sec")
 
     print(f"Final objective value ACADOS : {np.nansum(sol_obj_ac)} \n")
     print(f"Final objective value IPOPT : {np.nansum(sol_obj_ip)} \n")
